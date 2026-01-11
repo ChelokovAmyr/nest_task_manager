@@ -4,6 +4,10 @@ export default defineNuxtConfig({
 
   modules: [
     '@vueuse/nuxt',
+    '@pinia/nuxt',
+    // Временно отключаем проблемные модули
+    // '@vee-validate/nuxt',
+    // '@nuxtjs/i18n',
   ],
 
   css: ['~/assets/css/main.css'],
@@ -13,6 +17,29 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE_URL || 'http://localhost:3001/api/v1',
     }
   },
+
+  // TypeScript конфигурация
+  typescript: {
+    strict: true,
+    typeCheck: process.env.NODE_ENV === 'production', // Проверка типов только в production
+  },
+
+  // VeeValidate конфигурация (временно отключен)
+  // veeValidate: {
+  //   autoImports: true,
+  // },
+
+  // i18n конфигурация (временно отключен)
+  // i18n: {
+  //   locales: [
+  //     { code: 'ru', file: 'ru.json', name: 'Русский' },
+  //     { code: 'en', file: 'en.json', name: 'English' },
+  //   ],
+  //   lazy: true,
+  //   langDir: 'locales',
+  //   defaultLocale: 'ru',
+  //   strategy: 'no_prefix',
+  // },
 
   app: {
     head: {

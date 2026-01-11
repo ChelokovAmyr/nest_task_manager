@@ -19,7 +19,12 @@
 
     <!-- Stats Cards -->
     <div v-if="stats" class="stats-grid">
-      <div class="stat-card stat-card-total">
+      <div
+        class="stat-card stat-card-total"
+        :class="{ 'stat-card-active': filters.status === '' }"
+        @click="handleStatClick('')"
+        title="Показать все задачи"
+      >
         <div class="stat-icon">
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="currentColor">
             <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15M9 5C9 6.10457 9.89543 7 11 7H13C14.1046 7 15 6.10457 15 5M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5"/>
@@ -31,7 +36,12 @@
         </div>
       </div>
 
-      <div class="stat-card stat-card-todo">
+      <div
+        class="stat-card stat-card-todo"
+        :class="{ 'stat-card-active': filters.status === 'todo' }"
+        @click="handleStatClick('todo')"
+        title="Показать задачи к выполнению"
+      >
         <div class="stat-icon">
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="currentColor">
             <circle cx="12" cy="12" r="10"/>
@@ -44,7 +54,12 @@
         </div>
       </div>
 
-      <div class="stat-card stat-card-progress">
+      <div
+        class="stat-card stat-card-progress"
+        :class="{ 'stat-card-active': filters.status === 'in_progress' }"
+        @click="handleStatClick('in_progress')"
+        title="Показать задачи в работе"
+      >
         <div class="stat-icon">
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="currentColor">
             <path d="M21 12a9 9 0 11-6.219-8.56"/>
@@ -56,7 +71,12 @@
         </div>
       </div>
 
-      <div class="stat-card stat-card-done">
+      <div
+        class="stat-card stat-card-done"
+        :class="{ 'stat-card-active': filters.status === 'done' }"
+        @click="handleStatClick('done')"
+        title="Показать выполненные задачи"
+      >
         <div class="stat-icon">
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="currentColor">
             <path d="M5 12l5 5 10-10"/>
@@ -71,6 +91,21 @@
 
     <!-- Filters -->
     <div class="filters-card">
+      <div class="filters-header">
+        <h3 class="filters-title">Фильтры и сортировка</h3>
+        <button
+          v-if="hasActiveFilters"
+          @click="resetFilters"
+          class="btn-reset-filters"
+          title="Сбросить все фильтры"
+        >
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+            <path d="M3 3l14 14M17 3L3 17"/>
+            <circle cx="10" cy="10" r="7"/>
+          </svg>
+          Сбросить фильтры
+        </button>
+      </div>
       <div class="filters-grid">
         <div class="filter-group">
           <label class="label">
@@ -214,12 +249,23 @@ const notificationTitle = ref('')
 const notificationMessage = ref('')
 const notificationType = ref<'success' | 'error' | 'info'>('info')
 
-const filters = ref({
+const defaultFilters = {
   search: '',
   status: '',
   priority: '',
   sortBy: 'createdAt',
   sortOrder: 'DESC' as 'ASC' | 'DESC',
+}
+
+const filters = ref({ ...defaultFilters })
+
+// Проверка наличия активных фильтров
+const hasActiveFilters = computed(() => {
+  return filters.value.search !== '' ||
+         filters.value.status !== '' ||
+         filters.value.priority !== '' ||
+         filters.value.sortBy !== 'createdAt' ||
+         filters.value.sortOrder !== 'DESC'
 })
 
 // Debounce для поиска
@@ -304,6 +350,16 @@ const showNotificationMessage = (title: string, message: string, type: 'success'
   notificationMessage.value = message
   notificationType.value = type
   showNotification.value = true
+}
+
+const handleStatClick = (status: string) => {
+  filters.value.status = status
+  loadTasks()
+}
+
+const resetFilters = () => {
+  filters.value = { ...defaultFilters }
+  loadTasks()
 }
 
 const handleStatusChange = async (id: string, status: string) => {
@@ -412,6 +468,18 @@ onMounted(() => {
   overflow: hidden;
   will-change: transform, box-shadow, border-color;
   min-height: 100px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.stat-card-active {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.stat-card-active::before {
+  transform: scaleX(1);
 }
 
 .stat-card::before {
@@ -456,10 +524,20 @@ onMounted(() => {
 .stat-icon {
   width: 48px;
   height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0;
   flex-shrink: 0;
 }
 
@@ -506,6 +584,54 @@ onMounted(() => {
   padding: 1.5rem;
   box-shadow: var(--shadow);
   border: 1px solid var(--gray-200);
+}
+
+.filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.filters-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.btn-reset-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  color: var(--gray-700);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-reset-filters:hover {
+  background: var(--gray-200);
+  border-color: var(--gray-400);
+  color: var(--gray-900);
+  transform: translateY(-1px);
+}
+
+.btn-reset-filters:active {
+  transform: translateY(0);
+}
+
+.btn-reset-filters svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .filters-grid {

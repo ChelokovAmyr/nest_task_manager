@@ -1,0 +1,51 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "create": "Create Task",
+    "edit": "Edit Task",
+    "delete": "Delete Task",
+    "status": "Status",
+    "priority": "Priority",
+    "dueDate": "Due Date",
+    "description": "Description",
+    "todo": "To Do",
+    "inProgress": "In Progress",
+    "done": "Done",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "all": "All Tasks",
+    "stats": {
+      "total": "Total Tasks",
+      "byStatus": "By Status",
+      "byPriority": "By Priority"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "update": "Update Profile",
+    "updated": "Profile Updated"
+  }
+}
